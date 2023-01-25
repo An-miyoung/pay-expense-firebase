@@ -1,23 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ROUTES } from "./routes.js";
+import CreateGroup from "./components/CreateGroup";
+import AddMembers from "./components/AddMembers";
+import ExpenseMain from "./components/ExpenseMain";
+import { RecoilRoot } from "recoil";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <BrowserRouter>
+        <RecoilRoot>
+          <Routes>
+            <Route path="/" element={<Navigate to={ROUTES.CREATE_GROUP} />} />
+            <Route path={ROUTES.CREATE_GROUP} element={<CreateGroup />} />
+            <Route path={ROUTES.ADD_MEMBERS} element={<AddMembers />} />
+            <Route path={ROUTES.EXPENSE_MAIN} element={<ExpenseMain />} />
+          </Routes>
+        </RecoilRoot>
+      </BrowserRouter>
     </div>
   );
 }
