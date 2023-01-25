@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
+import "../firebase";
+import { getDatabase, ref, set } from "firebase/database";
 import { useNavigate } from "react-router-dom";
 import { Form } from "react-bootstrap";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { groupNameState } from "../states/groupName";
-
 import CenteredOverlayForm from "./shared/CenteredOverlayForm";
 import { ROUTES } from "../routes";
+import { uid } from "uid";
 
 const CreateGroup = () => {
   const navigate = useNavigate();
@@ -13,23 +15,18 @@ const CreateGroup = () => {
   const [validated, setValidated] = useState(false);
   // jest테스트를 위해 그룹네임이 올바르게 입력됐느지를 boolean 으로 표사
   const [validGroupName, setValidGroupName] = useState(false);
-  const setGroupName = useSetRecoilState(groupNameState);
+  const [groupName, setGroupName] = useRecoilState(groupNameState);
 
-  // const saveGroupName = () => {
-  //   API.post("groupsApi", "/groups", {
-  //     body: {
-  //       groupName,
-  //     },
-  //   })
-  //     .then(({ data }) => {
-  //       const { guid } = data;
-  //       setGroupId(guid);
-  //       navigate(ROUTE_UTILS.ADD_MEMBERS(guid));
-  //     })
-  //     .catch(({ response }) => {
-  //       alert(response.data.error);
-  //     });
-  // };
+  const createGroupNameData = useCallback(async () => {
+    const groupId = uid();
+    console.log("groupId => ", groupId);
+
+    console.log("groupName => ", groupName);
+    await set(ref(getDatabase(), "groups/" + groupId), {
+      groupId,
+      groupName,
+    });
+  }, [groupName]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -37,6 +34,7 @@ const CreateGroup = () => {
     const form = e.currentTarget;
     if (form.checkValidity()) {
       setValidGroupName(true);
+      createGroupNameData();
       navigate(ROUTES.ADD_MEMBERS);
     } else {
       e.stopPropagation();
