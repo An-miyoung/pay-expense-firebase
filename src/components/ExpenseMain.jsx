@@ -16,7 +16,7 @@ const ExpenseMain = () => {
   useGroupData();
 
   const handleSharing = () => {
-    if (navigator.userAgent.match(/iphone|android/i) && navigator.share) {
+    if (navigator.userAgent.match(/iPhone|Android/i) && navigator.share) {
       navigator.share({
         url: window.location.href,
       });
