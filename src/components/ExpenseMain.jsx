@@ -7,10 +7,12 @@ import AddExpenseForm from "./AddExpenseForm";
 import ExpenseTable from "./ExpenseTable";
 import SettlementSummary from "./SettlementSummary";
 import { groupNameState } from "../states/groupName";
+import { useGroupData } from "../hooks/useGroupData";
 
 // import CenteredOverlayForm from "./shared/CenteredOverlayForm";
 
 const ExpenseMain = () => {
+  useGroupData();
   return (
     <Container fluid>
       <Row>

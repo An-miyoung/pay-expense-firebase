@@ -4,20 +4,19 @@ import { getDatabase, ref, update } from "firebase/database";
 import { useNavigate } from "react-router-dom";
 import { Form } from "react-bootstrap";
 import { InputTags } from "react-bootstrap-tagsinput";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { ROUTES } from "../routes";
+import { useSetRecoilState } from "recoil";
+import { ROUTE_UTILS } from "../routes";
 import CenteredOverlayForm from "./shared/CenteredOverlayForm";
-import { groupIdState } from "../states/groupId";
 import { groupMembersState } from "../states/groupMembers";
-import { groupNameState } from "../states/groupName";
 import { StyledAddMemberErrorMsg } from "../components/shared/StyleTags";
+import { useGroupData } from "../hooks/useGroupData";
 
 const AddMembers = () => {
+  const { groupId, groupName, groupMembers } = useGroupData();
+
   const navigate = useNavigate();
   const [validated, setValidated] = useState(false);
-  const groupId = useRecoilValue(groupIdState);
-  const groupName = useRecoilValue(groupNameState);
-  const [groupMembers, setGroupMembers] = useRecoilState(groupMembersState);
+  const setGroupMembers = useSetRecoilState(groupMembersState);
   // 삼성모바일에서 <InputTags> 를 처리하지 못해서 member를 ','로 구분하도록 처리하기 위해
   const [groupMembersSting, setGroupMembersString] = useState("");
 
@@ -33,10 +32,9 @@ const AddMembers = () => {
     updates["/groups/" + groupId + "/groupMembers"] = groupMembers;
 
     update(ref(db), updates)
-      .then((_response) => {
-        console.log("success");
-      })
+      .then((_response) => {})
       .catch((error) => {
+        alert("멤버추가에 실패했습니다. 다시 시도해 주십시요.");
         console.log(error);
       });
   }, [groupId, groupMembers]);
@@ -47,12 +45,14 @@ const AddMembers = () => {
 
     if (groupMembers.length > 0) {
       addMembersData();
-      navigate(ROUTES.EXPENSE_MAIN);
+      navigate(ROUTE_UTILS.EXPENSE_MAIN(groupId));
     } else if (isSamsungInternet && groupMembersSting.length > 0) {
       setGroupMembers(groupMembersSting.split(","));
-      navigate(ROUTES.EXPENSE_MAIN);
+      navigate(ROUTE_UTILS.EXPENSE_MAIN(groupId));
     }
   };
+
+  useGroupData();
 
   return (
     <CenteredOverlayForm

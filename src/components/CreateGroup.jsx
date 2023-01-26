@@ -7,9 +7,8 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { groupIdState } from "../states/groupId";
 import { groupNameState } from "../states/groupName";
 import CenteredOverlayForm from "./shared/CenteredOverlayForm";
-import { ROUTES } from "../routes";
+import { ROUTE_UTILS } from "../routes";
 import { uid } from "uid";
-import ReadGroupData from "../utils/ReadGroupData";
 
 const CreateGroup = () => {
   const navigate = useNavigate();
@@ -28,12 +27,13 @@ const CreateGroup = () => {
       groupName,
     })
       .then((_response) => {
-        console.log("success");
+        navigate(ROUTE_UTILS.ADD_MEMBERS(guid));
       })
       .catch((error) => {
+        alert("그룹을 만드는데 실패했습니다. 다시 시도해 주십시요.");
         console.log(error);
       });
-  }, [groupName, setGroupId]);
+  }, [groupName, navigate, setGroupId]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -42,15 +42,12 @@ const CreateGroup = () => {
     if (form.checkValidity()) {
       setValidGroupName(true);
       createGroupNameData();
-      navigate(ROUTES.ADD_MEMBERS);
     } else {
       e.stopPropagation();
       setValidGroupName(false);
     }
     setValidated(true);
   };
-
-  ReadGroupData();
 
   return (
     <>

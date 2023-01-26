@@ -1,11 +1,9 @@
 import { useEffect } from "react";
 import "../firebase";
 import { getDatabase, ref, onValue } from "firebase/database";
-// import { useRecoilValue } from "recoil";
-// import { groupIdState } from "../states/groupId";
 
 const ReadGroupData = () => {
-  // const groupId = useRecoilValue(groupIdState);
+  //  DB 안의 모든 데이터를 읽어온다.
   const db = getDatabase();
 
   useEffect(() => {
