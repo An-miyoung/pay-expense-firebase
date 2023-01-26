@@ -24,7 +24,7 @@ export const useGroupData = () => {
           const { groupId, groupName, groupMembers, expenses } = data;
           setGroupId(groupId);
           setGroupName(groupName);
-          setGroupMembers(groupMembers);
+          setGroupMembers(groupMembers || []);
           setExpenses(expenses || []);
         } else if (data === null || data === undefined) {
           alert("데이터를 불러오는데 실패했습니다. 다시 시도해주세요.");
