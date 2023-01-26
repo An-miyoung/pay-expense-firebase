@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import "../firebase";
+import { getDatabase, ref, update } from "firebase/database";
 import { useNavigate } from "react-router-dom";
 import { Form } from "react-bootstrap";
 import { InputTags } from "react-bootstrap-tagsinput";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { ROUTES } from "../routes";
 import CenteredOverlayForm from "./shared/CenteredOverlayForm";
+import { groupIdState } from "../states/groupId";
 import { groupMembersState } from "../states/groupMembers";
 import { groupNameState } from "../states/groupName";
 import { StyledAddMemberErrorMsg } from "../components/shared/StyleTags";
@@ -12,6 +15,7 @@ import { StyledAddMemberErrorMsg } from "../components/shared/StyleTags";
 const AddMembers = () => {
   const navigate = useNavigate();
   const [validated, setValidated] = useState(false);
+  const groupId = useRecoilValue(groupIdState);
   const groupName = useRecoilValue(groupNameState);
   const [groupMembers, setGroupMembers] = useRecoilState(groupMembersState);
   // 삼성모바일에서 <InputTags> 를 처리하지 못해서 member를 ','로 구분하도록 처리하기 위해
@@ -23,28 +27,31 @@ const AddMembers = () => {
     window.navigator.userAgent.includes("SAMSUNG") ||
     window.navigator.userAgent.includes("SM");
 
-  // const saveGroupMembers = () => {
-  //   API.put("groupsApi", `/groups/${guid}/members`, {
-  //     body: {
-  //       members: groupMembers,
-  //     },
-  //   })
-  //     .then((_response) => {
-  //       navigate(ROUTES.EXPENSE_MAIN);
-  //     })
-  //     .catch(({ response }) => {
-  //       alert(response);
-  //     });
-  // };
+  const addMembersData = useCallback(() => {
+    const db = getDatabase();
+    const updates = {};
+    updates["/groups/" + groupId + "/groupMembers"] = groupMembers;
+
+    update(ref(db), updates)
+      .then((_response) => {
+        console.log("success");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [groupId, groupMembers]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setValidated(true);
 
-    if (isSamsungInternet && groupMembersSting.length > 0) {
+    if (groupMembers.length > 0) {
+      addMembersData();
+      navigate(ROUTES.EXPENSE_MAIN);
+    } else if (isSamsungInternet && groupMembersSting.length > 0) {
       setGroupMembers(groupMembersSting.split(","));
+      navigate(ROUTES.EXPENSE_MAIN);
     }
-    navigate(ROUTES.EXPENSE_MAIN);
   };
 
   return (

@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import "../firebase";
+import { getDatabase, ref, update } from "firebase/database";
 import { Col, Form, Row } from "react-bootstrap";
 import { StyledSubmitButton } from "./shared/StyleTags";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue, useRecoilState } from "recoil";
+import { groupIdState } from "../states/groupId";
 import { expensesState } from "../states/expenses";
 import { groupMembersState } from "../states/groupMembers";
 import styled from "styled-components";
 
 const AddExpenseForm = () => {
   const [validated, setValidated] = useState(false);
+  const groupId = useRecoilValue(groupIdState);
   const groupMembers = useRecoilValue(groupMembersState);
-  const setExpense = useSetRecoilState(expensesState);
+  const [expense, setExpense] = useRecoilState(expensesState);
   // TODO: 입력된 값중 검증된 값은 유지하기 위해 tempExpenseState 사용
 
   // jest 검증을 위한 state
@@ -46,17 +50,18 @@ const AddExpenseForm = () => {
     return descValid && amountValid && payerValid;
   };
 
-  // const saveExpense = (expense) => {
-  //   API.put("groupsApi", `/groups/${guid}/expenses`, {
-  //     body: {
-  //       expense,
-  //     },
-  //   })
-  //     .then((_response) => {
-  //       setExpense((prevState) => [...prevState, expense]);
-  //     })
-  //     .catch((_error) => alert("비용추가에 실패했습니다. 다시 시도해 주세요."));
-  // };
+  const addExpenseData = useCallback(() => {
+    const db = getDatabase();
+    const updates = {};
+    updates["/groups/" + groupId + "/expenses"] = expense;
+    update(ref(db), updates)
+      .then((_response) => {
+        console.log("success");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [expense, groupId]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -81,6 +86,7 @@ const AddExpenseForm = () => {
   };
 
   useEffect(() => {
+    addExpenseData();
     setTimeout(() => {
       // 최초 렌더링 컨디션으로 만들어 준다.
       setValidated(false);
