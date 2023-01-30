@@ -39,10 +39,13 @@ const ExpenseMain = () => {
           <RightPane />
         </Col>
       </Row>
-
-      <StyledShareButton onClick={handleSharing}>
-        <ShareFill />
-      </StyledShareButton>
+      {(navigator.share === undefined ||
+        navigator.share === null ||
+        !navigator.share) && (
+        <StyledShareButton onClick={handleSharing}>
+          <ShareFill />
+        </StyledShareButton>
+      )}
     </Container>
   );
 };
