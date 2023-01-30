@@ -7,13 +7,16 @@ import { useRecoilValue, useRecoilState } from "recoil";
 import { groupIdState } from "../states/groupId";
 import { expensesState } from "../states/expenses";
 import { groupMembersState } from "../states/groupMembers";
+import { currencyCodeState } from "../states/currency";
 import styled from "styled-components";
+import { checkAndReturnCurrency } from "../utils/checkAndReturnCurrency";
 
 const AddExpenseForm = () => {
   const [validated, setValidated] = useState(false);
   const groupId = useRecoilValue(groupIdState);
   const groupMembers = useRecoilValue(groupMembersState);
   const [expense, setExpense] = useRecoilState(expensesState);
+  const [currencyCode, setCurrencyCode] = useRecoilState(currencyCodeState);
   // TODO: 입력된 값중 검증된 값은 유지하기 위해 tempExpenseState 사용
 
   // jest 검증을 위한 state
@@ -73,6 +76,7 @@ const AddExpenseForm = () => {
         desc,
         amount,
         payer,
+        currencyCode,
       };
       setExpense((prevState) => [...prevState, newExpense]);
     }
@@ -148,6 +152,38 @@ const AddExpenseForm = () => {
             </StyledFormGroup>
           </Col>
           <Col xs={12} lg={6}>
+            <StyledFormGroup>
+              <Form.Select
+                className="form-control"
+                placeholder="어느나라 돈인가요?"
+                defaultValue=""
+                onChange={(e) => setCurrencyCode(e.target.value)}
+              >
+                {currencyCode !== undefined && currencyCode.length > 0 ? (
+                  <option disabled value={checkAndReturnCurrency(currencyCode)}>
+                    {checkAndReturnCurrency(currencyCode)}
+                  </option>
+                ) : (
+                  <>
+                    <option disabled value="">
+                      어느나라 돈인가요?
+                    </option>
+                    <option value="KRW">한국(원)</option>
+                    <option value="USD">미국($)</option>
+                    <option value="EURO">유럽(유로)</option>
+                    <option value="JPY">일본(엔)</option>
+                    <option value="CNY">중국(위안)</option>
+                  </>
+                )}
+              </Form.Select>
+              <Form.Control.Feedback type="invalid" data-valid={isPayerValid}>
+                결제자를 선택해 주세요.
+              </Form.Control.Feedback>
+            </StyledFormGroup>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
             <StyledFormGroup>
               <Form.Select
                 className="form-control"

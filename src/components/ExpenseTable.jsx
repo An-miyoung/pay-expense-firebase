@@ -3,10 +3,13 @@ import { Table } from "react-bootstrap";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { expensesState } from "../states/expenses";
+import { currencyState } from "../states/currency";
+import { getDescriptiveAmount } from "../utils/getDescriptiveAmount";
 import { OverlayWrapper } from "./shared/OverlayWrapper";
 
 function ExpenseTable() {
   const expenses = useRecoilValue(expensesState);
+  const currency = useRecoilValue(currencyState);
   return (
     <OverlayWrapper minHeight={"76vh"} padding={"3vh"}>
       <StyledTable data-testid="expenseList" borderless hover responsive>
@@ -24,7 +27,7 @@ function ExpenseTable() {
               <td>{date}</td>
               <td>{desc}</td>
               <td>{payer}</td>
-              <td>{parseInt(amount)} 원</td>
+              <td>{getDescriptiveAmount(currency, parseInt(amount))} </td>
             </tr>
           ))}
         </StyledBody>

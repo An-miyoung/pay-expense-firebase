@@ -3,7 +3,9 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { groupMembersState } from "../states/groupMembers";
 import { expensesState } from "../states/expenses";
+import { currencyState } from "../states/currency";
 import { StyledTitle } from "./AddExpenseForm";
+import { getDescriptiveAmount } from "../utils/getDescriptiveAmount";
 
 export const CalculateMinimumTransaction = (
   expenses,
@@ -81,6 +83,7 @@ export const CalculateMinimumTransaction = (
 const SettlementSummary = () => {
   const members = useRecoilValue(groupMembersState);
   const expenses = useRecoilValue(expensesState);
+  const currency = useRecoilValue(currencyState);
 
   const groupMembersCount = parseInt(members.length);
   const totalAmountExpense = parseInt(
@@ -106,16 +109,23 @@ const SettlementSummary = () => {
         <>
           <StyledSummary>
             <span>
-              {groupMembersCount}명 - 총 {totalAmountExpense} 원 지출
+              {groupMembersCount}명 - 총{" "}
+              {getDescriptiveAmount(currency, totalAmountExpense)} 지출
             </span>
             <br />
-            <span>한 사람당 {splitAmount} 원</span>
+            <span>
+              한 사람당 {getDescriptiveAmount(currency, splitAmount)}{" "}
+            </span>
           </StyledSummary>
           <StyledUl>
             {minTransaction.map(({ reciever, sender, amount }, idx) => (
-              <li
-                key={`transaction-${idx}`}
-              >{`${reciever}에게 ${sender}가 ${amount} 원 보내기`}</li>
+              <li key={`transaction-${idx}`}>
+                {`To: ${reciever}`}
+                <br />
+                {`From: ${sender}`}
+                <br />
+                {`${getDescriptiveAmount(currency, amount)}  보내기`}
+              </li>
             ))}
           </StyledUl>
         </>
