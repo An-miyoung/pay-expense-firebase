@@ -27,7 +27,12 @@ function ExpenseTable() {
               <td>{date}</td>
               <td>{desc}</td>
               <td>{payer}</td>
-              <td>{getDescriptiveAmount(currency, parseInt(amount))} </td>
+              <td>
+                {getDescriptiveAmount(
+                  currency,
+                  parseInt(amount).toLocaleString()
+                )}{" "}
+              </td>
             </tr>
           ))}
         </StyledBody>

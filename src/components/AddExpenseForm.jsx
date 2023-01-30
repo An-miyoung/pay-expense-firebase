@@ -160,7 +160,7 @@ const AddExpenseForm = () => {
                 onChange={(e) => setCurrencyCode(e.target.value)}
               >
                 {currencyCode !== undefined && currencyCode.length > 0 ? (
-                  <option disabled value={checkAndReturnCurrency(currencyCode)}>
+                  <option selected value={checkAndReturnCurrency(currencyCode)}>
                     {checkAndReturnCurrency(currencyCode)}
                   </option>
                 ) : (

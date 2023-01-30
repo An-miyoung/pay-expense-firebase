@@ -110,11 +110,26 @@ const SettlementSummary = () => {
           <StyledSummary>
             <span>
               {groupMembersCount}명 - 총{" "}
-              {getDescriptiveAmount(currency, totalAmountExpense)} 지출
+              {getDescriptiveAmount(
+                currency,
+                totalAmountExpense.toLocaleString()
+              )}{" "}
+              지출
             </span>
             <br />
             <span>
-              한 사람당 {getDescriptiveAmount(currency, splitAmount)}{" "}
+              한 사람당{" "}
+              {currency.label === "$" || currency.label === "€"
+                ? getDescriptiveAmount(currency, splitAmount.toLocaleString())
+                : currency.label === "¥" || currency.label === "CN¥"
+                ? getDescriptiveAmount(
+                    currency,
+                    Math.round(splitAmount).toLocaleString()
+                  )
+                : getDescriptiveAmount(
+                    currency,
+                    (Math.round(splitAmount / 10) * 10).toLocaleString()
+                  )}{" "}
             </span>
           </StyledSummary>
           <StyledUl>
@@ -124,7 +139,20 @@ const SettlementSummary = () => {
                 <br />
                 {`From: ${sender}`}
                 <br />
-                {`${getDescriptiveAmount(currency, amount)}  보내기`}
+                {currency.label === "$" || currency.label === "€"
+                  ? `${getDescriptiveAmount(
+                      currency,
+                      amount.toLocaleString()
+                    )}  보내기`
+                  : currency.label === "¥" || currency.label === "CN¥"
+                  ? getDescriptiveAmount(
+                      currency,
+                      Math.round(splitAmount).toLocaleString()
+                    )
+                  : `${getDescriptiveAmount(
+                      currency,
+                      (Math.round(amount / 10) * 10).toLocaleString()
+                    )}  보내기`}
               </li>
             ))}
           </StyledUl>
